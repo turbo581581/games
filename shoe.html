@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shoe Dog 创业模拟 - 网页版</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+      display: flex;
+      gap: 24px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+    .left {
+      flex: 2;
+    }
+    .right {
+      flex: 1;
+    }
+    h1 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      color: #f97316;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .question-id {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .question-text {
+      font-size: 18px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .option-btn {
+      text-align: left;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 10px 14px;
+      background: #020617;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .option-btn span.key {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #111827;
+      border: 1px solid #4b5563;
+      font-weight: 600;
+      font-size: 12px;
+      color: #f97316;
+    }
+    .option-btn:hover {
+      background: #111827;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(15,23,42,0.8);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid #4b5563;
+      color: #9ca3af;
+      gap: 6px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .stat {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      font-size: 13px;
+    }
+    .stat-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: #9ca3af;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #0b1220;
+      border: 1px solid #1f2937;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    .pill span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+    .log {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed #1f2937;
+      font-size: 12px;
+      color: #9ca3af;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 12px;
+    }
+    .result-title {
+      font-size: 20px;
+      margin-bottom: 6px;
+      color: #facc15;
+    }
+    .result-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e5e7eb;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card left">
+      <h1>Shoe Dog 创业模拟</h1>
+      <div class="pill">
+        <span class="dot"></span>
+        <span id="round-info">第 1 关 / 共 11 关</span>
+      </div>
+      <div class="question-id" id="question-id"></div>
+      <div class="question-text" id="question-text"></div>
+      <div class="option-list" id="option-list"></div>
+
+      <div class="log" id="log"></div>
+
+      <div class="footer">
+        每次选择都会改变你的现金、供应链、品牌、团队、成长与风险。<br/>
+        通关后看看你是：破产、区域小厂、中国耐克，还是超越耐克。
+      </div>
+    </div>
+
+    <div class="card right">
+      <h2>当前创业状态</h2>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-label"><span>💰 现金流</span></div><div class="stat-value" id="stat-cash">0</div></div>
+        <div class="stat"><div class="stat-label"><span>📦 供应链</span></div><div class="stat-value" id="stat-supply">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🧲 品牌力</span></div><div class="stat-value" id="stat-brand">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🧑‍🤝‍🧑 团队士气</span></div><div class="stat-value" id="stat-team">0</div></div>
+        <div class="stat"><div class="stat-label"><span>📈 成长速度</span></div><div class="stat-value" id="stat-growth">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🌪 风险指数</span></div><div class="stat-value" id="stat-risk">0</div></div>
+      </div>
+
+      <div id="result-block" style="margin-top:16px; display:none;">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-text" id="result-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 1,
+        text: "毕业后，你想干什么？",
+        options: {
+          A: {
+            text: "去会计师事务所上班（稳定工作，学习财务）",
+            effects: { cash: 10, growth: 5, risk: -5 }
+          },
+          B: {
+            text: "去环球旅行寻找灵感（开眼界，但花钱）",
+            effects: { cash: -10, growth: 10, risk: 5, brand: 5 }
+          },
+          C: {
+            text: "在家写商业计划书（理论充足，实践不足）",
+            effects: { cash: -5, growth: 5 }
+          },
+          D: {
+            text: "随便混几年（安全但浪费时间）",
+            effects: { growth: -5, risk: -5 }
+          }
+        }
+      },
+      {
+        id: 2,
+        text: "你萌生了做跑鞋生意的想法，要不要去日本谈代理？",
+        options: {
+          A: {
+            text: "立刻飞日本，硬刚拜访供应商",
+            effects: { cash: -10, growth: 10, risk: 5, brand: 5 }
+          },
+          B: {
+            text: "写邮件等对方回复（安全但节奏慢）",
+            effects: { risk: -5, growth: -5 }
+          },
+          C: {
+            text: "不去，日本太远太贵（放弃机会）",
+            effects: { growth: -10 }
+          },
+          D: {
+            text: "借钱飞日本（高风险高回报）",
+            effects: { cash: -20, growth: 15, risk: 10, brand: 5 }
+          }
+        }
+      },
+      {
+        id: 3,
+        text: "供应商问：你们公司有多大？其实就你一个人，你怎么回答？",
+        options: {
+          A: {
+            text: "老实说只有我一个人（诚信但谈判力差）",
+            effects: { supply: -5, brand: -2, risk: -5 }
+          },
+          B: {
+            text: "模糊回答：我们在美国有销售网络",
+            effects: { supply: 5, risk: 5, brand: 2 }
+          },
+          C: {
+            text: "吹牛：我们是美国大型分销商",
+            effects: { supply: 10, risk: 15, brand: 5 }
+          },
+          D: {
+            text: "反问对方市场规划，侧面展现专业度",
+            effects: { supply: 5, growth: 5, brand: 3 }
+          }
+        }
+      },
+      {
+        id: 4,
+        text: "第一批鞋到美国了，你打算怎么卖？",
+        options: {
+          A: {
+            text: "自己开车跑校园，一双一双地卖",
+            effects: { brand: 15, cash: 5, growth: 10, team: 5, risk: -5 }
+          },
+          B: {
+            text: "找零售店铺铺货（批发为主）",
+            effects: { cash: 10, supply: 5, brand: 5 }
+          },
+          C: {
+            text: "让朋友帮忙卖（轻松但不可控）",
+            effects: { cash: 5, team: 5, risk: 5 }
+          },
+          D: {
+            text: "砸广告推广（快速打响名气）",
+            effects: { cash: -15, brand: 15, risk: 5 }
+          }
+        }
+      },
+      {
+        id: 5,
+        text: "销量开始起来，但现金周转不过来，你怎么办？",
+        options: {
+          A: {
+            text: "向银行申请贷款（正路，但背负债务）",
+            effects: { cash: 30, risk: 10, supply: 10, brand: 5, growth: 5 }
+          },
+          B: {
+            text: "向父母借钱（快速但压力在家庭）",
+            effects: { cash: 15, team: -5, risk: 5 }
+          },
+          C: {
+            text: "刷信用卡透支（非常危险）",
+            effects: { cash: 20, risk: 20 }
+          },
+          D: {
+            text: "停下扩张，慢慢卖（保守）",
+            effects: { growth: -10, risk: -10, supply: -5 }
+          }
+        }
+      },
+      {
+        id: 6,
+        text: "你遇到了疯子型销售 Johnson，你如何管理他？",
+        options: {
+          A: {
+            text: "放手让他自由发挥（高增长高混乱）",
+            effects: { brand: 15, team: 10, cash: 10, growth: 10, risk: 5, supply: -5 }
+          },
+          B: {
+            text: "设定严格 KPI 进行管控",
+            effects: { brand: 0, team: -5, cash: 5, growth: 5, risk: -5 }
+          },
+          C: {
+            text: "让他负责重点客户，有限度地放权",
+            effects: { brand: 10, team: 5, cash: 5, growth: 5 }
+          },
+          D: {
+            text: "觉得太难管，干脆开除他",
+            effects: { brand: -10, team: -5, growth: -5 }
+          }
+        }
+      },
+      {
+        id: 7,
+        text: "供应链第一次出现断货风险，你怎么办？",
+        options: {
+          A: {
+            text: "向现有供应商施压，逼他优先给你产能",
+            effects: { supply: -5, risk: 5, brand: -2 }
+          },
+          B: {
+            text: "自己再找一家供应商，做多元化布局",
+            effects: { supply: 20, risk: -20, cash: -10, brand: 10, team: 5, growth: 10 }
+          },
+          C: {
+            text: "选择等待，看情况再说",
+            effects: { supply: -15, cash: -5, risk: 5 }
+          },
+          D: {
+            text: "在公开场合吐槽供应商，让舆论施压",
+            effects: { brand: -20, risk: 20 }
+          }
+        }
+      },
+      {
+        id: 8,
+        text: "竞争对手开始抄袭你的设计，你怎么办？",
+        options: {
+          A: {
+            text: "继续猛做新品迭代，保持技术领先",
+            effects: { brand: 10, cash: -5, growth: 10, risk: 0 }
+          },
+          B: {
+            text: "打官司维权（烧钱但树立立场）",
+            effects: { cash: -20, brand: 10, risk: -5, team: 5, growth: 5 }
+          },
+          C: {
+            text: "靠降价跟对手拼价格",
+            effects: { cash: -10, brand: -10, risk: 10 }
+          },
+          D: {
+            text: "从产品转向强调品牌故事和运动员形象",
+            effects: { brand: 15, cash: -5, growth: 5 }
+          }
+        }
+      },
+      {
+        id: 9,
+        text: "你的跑鞋品牌逐渐成名，要不要扩展品类？",
+        options: {
+          A: {
+            text: "暂时不扩，继续深耕跑鞋",
+            effects: { risk: -15, cash: 10, team: 5, supply: 5, growth: -5 }
+          },
+          B: {
+            text: "扩展篮球鞋，押注新赛道",
+            effects: { growth: 15, cash: -10, risk: 10, brand: 10 }
+          },
+          C: {
+            text: "做运动服装，尝试提升客单价",
+            effects: { brand: 10, cash: -5, risk: 5 }
+          },
+          D: {
+            text: "鞋、服、配件一起扩（全线开火）",
+            effects: { growth: 20, cash: -20, risk: 20 }
+          }
+        }
+      },
+      {
+        id: 10,
+        text: "欧洲渠道商找上门，你第一次迎来全球化机会，怎么做？",
+        options: {
+          A: {
+            text: "小规模自营试水，慢慢摸索",
+            effects: { growth: 10, cash: -10, risk: 5, brand: 5 }
+          },
+          B: {
+            text: "大规模进入，重仓欧洲市场",
+            effects: { growth: 20, cash: -20, risk: 20, brand: 15 }
+          },
+          C: {
+            text: "找当地代理做，轻资产全球化",
+            effects: { supply: 10, risk: -10, brand: 15, growth: 10, team: 5 }
+          },
+          D: {
+            text: "暂缓，觉得时机未到",
+            effects: { growth: -5, risk: -5 }
+          }
+        }
+      },
+      {
+        id: 11,
+        text: "投资人问：要不要现在就上市？",
+        options: {
+          A: {
+            text: "立刻上市，拿钱、扩张！",
+            effects: { cash: 50, risk: 20, brand: 10, growth: 15 }
+          },
+          B: {
+            text: "再等一年，把基础打稳再上市",
+            effects: { risk: -10, brand: 10, team: 10, growth: 5, supply: 5 }
+          },
+          C: {
+            text: "先再融一轮私募，暂不上市",
+            effects: { cash: 20, risk: 5, growth: 5 }
+          },
+          D: {
+            text: "拒绝上市，保持绝对控制权",
+            effects: { risk: -5, brand: 0, growth: -5 }
+          }
+        }
+      }
+    ];
+
+    const state = {
+      cash: 0,
+      supply: 0,
+      brand: 0,
+      team: 0,
+      growth: 0,
+      risk: 0,
+      history: []
+    };
+
+    let currentIndex = 0;
+
+    function updateStatsView() {
+      document.getElementById("stat-cash").textContent = state.cash;
+      document.getElementById("stat-supply").textContent = state.supply;
+      document.getElementById("stat-brand").textContent = state.brand;
+      document.getElementById("stat-team").textContent = state.team;
+      document.getElementById("stat-growth").textContent = state.growth;
+      document.getElementById("stat-risk").textContent = state.risk;
+    }
+
+    function isBankrupt() {
+      if (state.cash < -10) {
+        return "现金流彻底崩溃（cash < -10）";
+      }
+      if (state.supply < -20) {
+        return "供应链断裂（supply < -20）";
+      }
+      if (state.team < -15) {
+        return "核心团队散掉（team < -15）";
+      }
+      return null;
+    }
+
+    function evaluateEnding() {
+      const deathReason = isBankrupt();
+      if (deathReason) {
+        return {
+          title: "【结局：破产】",
+          text: `原因：${deathReason}\n你没能走完奈特的创业之路。`
+        };
+      }
+
+      const power =
+        state.brand * 1.5 +
+        state.growth * 1.2 +
+        state.supply * 1.0 +
+        state.team * 1.0 +
+        state.cash * 0.8 -
+        state.risk * 0.5;
+
+      if (power >= 220 && state.brand >= 80 && state.growth >= 60) {
+        return {
+          title: "【结局：超越耐克】",
+          text: "你打造了一个全球第一的运动品牌，甚至超过了耐克本尊。"
+        };
+      } else if (power >= 180 && state.brand >= 70) {
+        return {
+          title: "【结局：全球运动巨头】",
+          text: "你成功复制了奈特的道路，成为世界级运动品牌。"
+        };
+      } else if (power >= 130 && state.brand >= 50) {
+        return {
+          title: "【结局：中国顶级运动品牌】",
+          text: "你类似安踏 / 李宁，成为中国数一数二的运动品牌。"
+        };
+      } else if (power >= 90) {
+        return {
+          title: "【结局：区域知名品牌】",
+          text: "你在本国 / 部分区域非常有名，但还没走向真正全球化。"
+        };
+      } else if (power >= 50) {
+        return {
+          title: "【结局：活下来的小公司】",
+          text: "你没有死，但也没有做大，算是有尊严地活着的小企业。"
+        };
+      } else {
+        return {
+          title: "【结局：勉强存活】",
+          text: "你艰难活着，离破产只有一步之遥。"
+        };
+      }
+    }
+
+    function appendLog(questionId, choiceKey, effects) {
+      const log = document.getElementById("log");
+      const line = document.createElement("div");
+      line.textContent =
+        `第 ${questionId} 关 选择 ${choiceKey}：` +
+        `cash ${effects.cash || 0}, supply ${effects.supply || 0}, ` +
+        `brand ${effects.brand || 0}, team ${effects.team || 0}, ` +
+        `growth ${effects.growth || 0}, risk ${effects.risk || 0}`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function renderQuestion() {
+      const roundInfo = document.getElementById("round-info");
+      const total = questions.length;
+      const q = questions[currentIndex];
+
+      roundInfo.textContent = `第 ${q.id} 关 / 共 ${total} 关`;
+      document.getElementById("question-id").textContent = `Q${q.id}`;
+      document.getElementById("question-text").textContent = q.text;
+
+      const optionList = document.getElementById("option-list");
+      optionList.innerHTML = "";
+
+      for (const key of ["A", "B", "C", "D"]) {
+        const opt = q.options[key];
+        if (!opt) continue;
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<span class="key">${key}</span><span>${opt.text}</span>`;
+        btn.onclick = () => handleChoice(key);
+        optionList.appendChild(btn);
+      }
+
+      updateStatsView();
+    }
+
+    function handleChoice(key) {
+      const q = questions[currentIndex];
+      const opt = q.options[key];
+      const effects = opt.effects || {};
+
+      // 更新状态
+      state.cash += effects.cash || 0;
+      state.supply += effects.supply || 0;
+      state.brand += effects.brand || 0;
+      state.team += effects.team || 0;
+      state.growth += effects.growth || 0;
+      state.risk += effects.risk || 0;
+
+      state.history.push({
+        question: q.id,
+        option: key,
+        effects
+      });
+
+      appendLog(q.id, key, effects);
+      updateStatsView();
+
+      // 检查死亡
+      const deathReason = isBankrupt();
+      if (deathReason) {
+        // 直接结束
+        endGame();
+        return;
+      }
+
+      // 下一题
+      currentIndex++;
+      if (currentIndex >= questions.length) {
+        endGame();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function endGame() {
+      const optionList = document.getElementById("option-list");
+      optionList.innerHTML = "";
+
+      const resultBlock = document.getElementById("result-block");
+      const r = evaluateEnding();
+      document.getElementById("result-title").textContent = r.title;
+      document.getElementById("result-text").textContent =
+        r.text + `\n\n最终状态：\n` +
+        `💰 cash=${state.cash}\n📦 supply=${state.supply}\n` +
+        `🧲 brand=${state.brand}\n🧑‍🤝‍🧑 team=${state.team}\n` +
+        `📈 growth=${state.growth}\n🌪 risk=${state.risk}`;
+      resultBlock.style.display = "block";
+
+      document.getElementById("question-id").textContent = "游戏结束";
+      document.getElementById("question-text").textContent =
+        "你已完成全部关键抉择。看看你走到了哪一步？";
+    }
+
+    // 初始化
+    renderQuestion();
+  </script>
+</body>
+</html>
+
